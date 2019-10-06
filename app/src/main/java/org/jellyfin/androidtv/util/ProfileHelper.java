@@ -5,6 +5,7 @@ import android.os.Build;
 import org.jellyfin.androidtv.TvApp;
 import org.jellyfin.androidtv.constants.CodecTypes;
 import org.jellyfin.androidtv.constants.ContainerTypes;
+import org.jellyfin.androidtv.constants.MediaTypes;
 import org.jellyfin.androidtv.model.compat.AndroidProfileOptions;
 
 import java.util.ArrayList;
@@ -38,15 +39,15 @@ public class ProfileHelper {
         List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
         TranscodingProfile transProfile = new TranscodingProfile();
-//        if (isLiveTv) {
-//            transProfile.setContainer(ContainerTypes.TS);
-//            transProfile.setVideoCodec(CodecTypes.H264);
-//            transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
-//            transProfile.setType(DlnaProfileType.Video);
-//            transProfile.setContext(EncodingContext.Streaming);
-//            transProfile.setProtocol(MediaTypes.HLS);
-//
-//        } else {
+        if (isLiveTv) {
+            transProfile.setContainer(ContainerTypes.TS);
+            transProfile.setVideoCodec(CodecTypes.H264);
+            transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
+            transProfile.setType(DlnaProfileType.Video);
+            transProfile.setContext(EncodingContext.Streaming);
+            transProfile.setProtocol(MediaTypes.HLS);
+
+        } else {
             transProfile.setContainer(ContainerTypes.MKV);
             transProfile.setVideoCodec(ContainerTypes.MP4);
             transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
@@ -54,7 +55,7 @@ public class ProfileHelper {
             transProfile.setContext(EncodingContext.Streaming);
             transProfile.setCopyTimestamps(true);
 
-//        }
+        }
 
         transcodingProfiles.add(transProfile);
 
