@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-def version = "0.9.1"
+def version = "1.0.0-jacobinary"
 
 android {
     compileSdkVersion 28
