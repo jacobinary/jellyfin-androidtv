@@ -138,7 +138,6 @@ public class PlaybackController {
     }
     public MediaSourceInfo getCurrentMediaSource() { return mCurrentStreamInfo != null && mCurrentStreamInfo.getMediaSource() != null ? mCurrentStreamInfo.getMediaSource() : getCurrentlyPlayingItem().getMediaSources().get(0);}
     public StreamInfo getCurrentStreamInfo() { return mCurrentStreamInfo; }
-    public boolean canSeek() {return !isLiveTv;}
     public boolean isLiveTv() { return isLiveTv; }
     public int getSubtitleStreamIndex() {return (mCurrentOptions != null && mCurrentOptions.getSubtitleStreamIndex() != null) ? mCurrentOptions.getSubtitleStreamIndex() : -1; }
     public Integer getAudioStreamIndex() {
@@ -935,23 +934,15 @@ public class PlaybackController {
         }
     }
 
-    private long getRealTimeProgress() {
-        return System.currentTimeMillis() - mCurrentProgramStartTime;
-    }
-
-    private long getTimeShiftedProgress() {
-        return !directStreamLiveTv ? mVideoManager.getCurrentPosition() + (mCurrentTranscodeStartTime - mCurrentProgramStartTime) : getRealTimeProgress();
-    }
-
     private void startReportLoop() {
         ReportingHelper.reportProgress(getCurrentlyPlayingItem(), getCurrentStreamInfo(), mVideoManager.getCurrentPosition() * 10000, false);
         mReportLoop = new Runnable() {
             @Override
             public void run() {
                 if (mPlaybackState == PlaybackState.PLAYING) {
-                    long currentTime = isLiveTv ? getTimeShiftedProgress() : mVideoManager.getCurrentPosition();
+                    long currentTime = mVideoManager.getCurrentPosition() ;
 
-                    ReportingHelper.reportProgress(getCurrentlyPlayingItem(), getCurrentStreamInfo(), currentTime * 10000, false);
+                    ReportingHelper.reportProgress(getCurrentlyPlayingItem(), getCurrentStreamInfo(), mVideoManager.getCurrentPosition() * 10000, false);
 
                     //Do this next up processing here because every 3 seconds is good enough
                     if (!nextItemReported && hasNextItem() && currentTime >= mNextItemThreshold) {
@@ -973,13 +964,7 @@ public class PlaybackController {
         mReportLoop = new Runnable() {
             @Override
             public void run() {
-
-                long currentTime = isLiveTv ? getTimeShiftedProgress() : mVideoManager.getCurrentPosition();
-                if (isLiveTv && !directStreamLiveTv) {
-                    mFragment.setSecondaryTime(getRealTimeProgress());
-                }
-
-                ReportingHelper.reportProgress(getCurrentlyPlayingItem(), getCurrentStreamInfo(), currentTime * 10000, true);
+                ReportingHelper.reportProgress(getCurrentlyPlayingItem(), getCurrentStreamInfo(), mVideoManager.getCurrentPosition() * 10000, true);
                 mHandler.postDelayed(this, PROGRESS_REPORTING_PAUSE_INTERVAL);
             }
         };
@@ -1142,11 +1127,9 @@ public class PlaybackController {
                             // crossed fire off an async routine to update the program info
                             updateTvProgramInfo();
                         }
-                        final Long currentTime = isLiveTv && mCurrentProgramStartTime > 0 ? getRealTimeProgress() : mVideoManager.getCurrentPosition();
-                        mFragment.setCurrentTime(currentTime);
-                        //if (isLiveTv && !directStreamLiveTv) mFragment.setSecondaryTime(getRealTimeProgress());
-                        mCurrentPosition = currentTime;
-                        mFragment.updateSubtitles(currentTime);
+                        mCurrentPosition =  mVideoManager.getCurrentPosition();
+                        mFragment.setCurrentTime(mCurrentPosition);
+                        mFragment.updateSubtitles(mCurrentPosition);
                     }
 
                     updateProgress = continueUpdate;
@@ -1170,10 +1153,6 @@ public class PlaybackController {
 
     public boolean isPaused() {
         return mPlaybackState == PlaybackState.PAUSED;
-    }
-
-    public boolean isIdle() {
-        return mPlaybackState == PlaybackState.IDLE;
     }
 
     public int getZoomMode() {

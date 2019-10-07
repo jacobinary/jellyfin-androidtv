@@ -673,7 +673,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements IPlayback
                         return true;
                     }
 
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mPlaybackController.canSeek()) {
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                         mPlaybackController.pause();
                         return true;
                     }
@@ -1271,25 +1271,6 @@ public class CustomPlaybackOverlayFragment extends Fragment implements IPlayback
     private void addButtons(BaseItemDto item) {
         mButtonRow.removeAllViews();
 
-        if (!DeviceUtils.isFireTv() && mPlaybackController.canSeek()) {
-            // on-screen jump buttons for Nexus
-            mButtonRow.addView(new ImageButton(mActivity, R.drawable.ic_loop, mButtonSize, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mPlaybackController.skip(-11000);
-                    startFadeTimer();
-                }
-            }));
-
-            mButtonRow.addView(new ImageButton(mActivity, R.drawable.ic_fastforward, mButtonSize, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mPlaybackController.skip(30000);
-                    startFadeTimer();
-                }
-            }));
-        }
-
         if (mPlaybackController.isLiveTv()) {
             // previous channel button
             if (TvManager.getPrevLiveTvChannel() != null) {
@@ -1300,7 +1281,26 @@ public class CustomPlaybackOverlayFragment extends Fragment implements IPlayback
                     }
                 }));
             }
+        }
 
+        // on-screen jump buttons
+        mButtonRow.addView(new ImageButton(mActivity, R.drawable.ic_fastrewind, mButtonSize, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlaybackController.skip(-11000);
+                startFadeTimer();
+            }
+        }));
+
+        mButtonRow.addView(new ImageButton(mActivity, R.drawable.ic_fastforward, mButtonSize, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlaybackController.skip(30000);
+                startFadeTimer();
+            }
+        }));
+
+        if (mPlaybackController.isLiveTv()) {
             // create quick channel change row
             TvManager.loadAllChannels(new Response<Integer>() {
                 @Override
