@@ -39,23 +39,12 @@ public class ProfileHelper {
         List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
         TranscodingProfile transProfile = new TranscodingProfile();
-        if (isLiveTv) {
-            transProfile.setContainer(ContainerTypes.TS);
-            transProfile.setVideoCodec(CodecTypes.H264);
-            transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
-            transProfile.setType(DlnaProfileType.Video);
-            transProfile.setContext(EncodingContext.Streaming);
-            transProfile.setProtocol(MediaTypes.HLS);
-
-        } else {
-            transProfile.setContainer(ContainerTypes.MKV);
-            transProfile.setVideoCodec(ContainerTypes.MP4);
-            transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
-            transProfile.setType(DlnaProfileType.Video);
-            transProfile.setContext(EncodingContext.Streaming);
-            transProfile.setCopyTimestamps(true);
-
-        }
+        transProfile.setContainer(ContainerTypes.TS);
+        transProfile.setVideoCodec(CodecTypes.H264);
+        transProfile.setAudioCodec(Utils.join(",", CodecTypes.AAC, CodecTypes.MP3));
+        transProfile.setType(DlnaProfileType.Video);
+        transProfile.setContext(EncodingContext.Streaming);
+        transProfile.setProtocol(MediaTypes.HLS);
 
         transcodingProfiles.add(transProfile);
 
